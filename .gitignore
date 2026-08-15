@@ -12,3 +12,6 @@ coverage/
 apps/bridge/drizzle.config.js
 apps/bridge/drizzle.config.d.ts
 apps/bridge/drizzle.config.js.map
+
+# Vercel CLI link metadata
+.vercel

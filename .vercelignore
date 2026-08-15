@@ -1,0 +1,7 @@
+# The bridge is never deployed. It spawns child processes, owns a local SQLite
+# database, and runs on your machine's `claude login` — none of which exist on
+# a serverless host.
+apps/bridge
+test
+*.md
+!README.md

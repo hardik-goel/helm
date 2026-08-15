@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { bridge } from '@/lib/bridge';
 import { useHelm } from '@/lib/store';
 
@@ -72,16 +72,41 @@ export function TopBar() {
   );
 }
 
+/**
+ * True when this page is being served from somewhere other than the operator's
+ * own machine. A hosted copy of the cockpit can never reach the bridge: the
+ * bridge listens on loopback, and a browser will not let an https page talk to
+ * http://127.0.0.1 anyway. Better to say so than to show a broken cockpit.
+ */
+function useIsHosted(): boolean {
+  const [hosted, setHosted] = useState(false);
+  useEffect(() => {
+    const h = window.location.hostname;
+    setHosted(h !== 'localhost' && h !== '127.0.0.1' && h !== '[::1]');
+  }, []);
+  return hosted;
+}
+
 export function Banners() {
   const fleet = useHelm((s) => s.fleet);
   const connection = useHelm((s) => s.connection);
+  const hosted = useIsHosted();
 
   const spend = fleet?.spendTodayUsd ?? 0;
   const cap = fleet?.fleetCapUsd ?? 0;
 
   return (
     <>
-      {connection === 'offline' && (
+      {hosted && (
+        <div className="banner amber">
+          <strong>hosted copy</strong>
+          <span>
+            Helm is a local cockpit. Its bridge runs on your own machine and this page cannot reach
+            it — clone the repo and run <code>pnpm helm</code>, then open localhost:3777.
+          </span>
+        </div>
+      )}
+      {connection === 'offline' && !hosted && (
         <div className="banner red">
           <strong>bridge offline</strong>
           <span>
