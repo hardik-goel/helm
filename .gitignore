@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.next/
+out/
+*.tsbuildinfo
+.DS_Store
+.env
+.env.local
+coverage/
+
+# tsc -b leaves these beside the sources it compiles
+apps/bridge/drizzle.config.js
+apps/bridge/drizzle.config.d.ts
+apps/bridge/drizzle.config.js.map
