@@ -381,7 +381,7 @@
         saved in this browser, and <b>Export results</b> hands you a copy to send on.
       </p>
       <div class="meta-row">
-        <span class="pill amber">14 sections</span>
+        <span class="pill amber" id="pill-sections">— sections</span>
         <span class="pill" id="pill-count">— tests</span>
         <span class="pill mint">automated coverage: 140 unit tests</span>
         <span class="pill violet">local-first · no cloud · no API keys</span>
@@ -1193,6 +1193,68 @@ const SECTIONS = [
         why: "If the primary engine is ever unavailable, the product still works — with the difference noted in the limitations below."
       }
     ]
+  },
+
+  {
+    id: "desktop",
+    title: "14 · The desktop app",
+    blurb: "The same product with no terminal: a double-clickable app, a menu-bar icon, and notifications when something needs you.",
+    tests: [
+      {
+        id: "14.1", title: "Install it", verify: "manual",
+        steps: [
+          "Open the <code>.dmg</code> and drag Helm to Applications.",
+          "The first launch needs right-click → Open, because the build is unsigned."
+        ],
+        expect: "Helm opens with the cockpit already loaded and agents ready — no terminal, no Node, no install steps.",
+        why: "This is the difference between a tool for developers and a product."
+      },
+      {
+        id: "14.2", title: "It is the same fleet", verify: "manual",
+        steps: ["Open the app and look at your projects and agents."],
+        expect: "Everything you set up from the terminal is there — same database, same settings, same history.",
+        why: "The app is a shell around the same daemon, not a second copy of the product."
+      },
+      {
+        id: "14.3", title: "The menu-bar icon", verify: "manual",
+        steps: ["Click the helm icon in the menu bar."],
+        expect: "A menu showing fleet status, how many approvals are waiting, and entries to open the cockpit, kill or resume the fleet, open the Helm folder, and quit.",
+        why: "Law 3 says the kill switch must always be reachable — including when the window is closed."
+      },
+      {
+        id: "14.4", title: "Kill the fleet from the menu bar", verify: "manual",
+        steps: ["Start an agent, close the Helm window, then choose <b>Kill fleet now</b> from the menu bar."],
+        expect: "Everything stops, and a notification confirms it. Re-opening the cockpit shows the killed banner.",
+        why: "You should not have to find a window to stop your agents."
+      },
+      {
+        id: "14.5", title: "You are told when an agent needs you", verify: "manual",
+        steps: [
+          "Close the Helm window, leaving the app running.",
+          "Trigger work that reaches the approval gate."
+        ],
+        expect: "A desktop notification names the action and the kind. Clicking it opens the cockpit. The menu-bar count goes up.",
+        why: "Without this a blocked agent waits in silence until you happen to look."
+      },
+      {
+        id: "14.6", title: "Closing the window does not stop your fleet", verify: "manual",
+        steps: ["With an agent running, close the window with the red button, then re-open from the menu bar."],
+        expect: "The session is still running and its progress continued while the window was closed.",
+        why: "Closing a window is not the same as stopping work, and the app should not confuse the two."
+      },
+      {
+        id: "14.7", title: "Quitting stops every agent", verify: "both",
+        steps: ["Start an agent, then quit Helm properly (⌘Q or menu-bar Quit).", "In a terminal, run <code>lsof -ti tcp:8787</code>."],
+        expect: "Nothing is listening, and no agent processes are left behind.",
+        why: "Quitting must never leave orphaned sessions running against your repositories."
+      },
+      {
+        id: "14.8", title: "Only one Helm at a time", verify: "manual",
+        steps: ["With Helm open, launch it again from Applications.", "Separately: with <code>pnpm helm</code> running in a terminal, open the app."],
+        expect: "The second launch focuses the existing window instead of starting a second copy. If a terminal session already holds the ports, the app explains exactly that rather than failing obscurely.",
+        why: "Two supervisors against one database would be a genuine hazard; the product refuses instead."
+      }
+    ]
   }
 ];
 
@@ -1211,6 +1273,16 @@ const LIMITATIONS = [
     tag: "by design",
     title: "Loop conditions are a small language, not a scripting language",
     body: "Conditions support comparisons, and/or/not, and reading values from previous steps. They deliberately cannot call functions or reach the system — a workflow file should not be able to run arbitrary code."
+  },
+  {
+    tag: "distribution",
+    title: "The desktop app is unsigned",
+    body: "Helm.app is built without an Apple Developer certificate, so the first launch needs right-click → Open and macOS will warn about an unidentified developer. Signing and notarisation need a paid Apple Developer account; once configured, the same build command produces a signed app that opens normally. Builds are produced for both Apple Silicon and Intel."
+  },
+  {
+    tag: "distribution",
+    title: "No auto-update yet",
+    body: "The app does not check for or install updates. New versions are installed by replacing the app. The wiring for update feeds exists in the packaging tool but is not switched on, because that needs somewhere to publish releases to."
   },
   {
     tag: "platform",
@@ -1308,6 +1380,17 @@ const BUILT = [
       "Deterministic health watchdog: stuck runs, cost spikes, repeated findings",
       "Five starter templates, in-console YAML editing with live validation, import/export",
       "Per-agent weekly self-review that proposes its own playbook edits for approval"
+    ]
+  },
+  {
+    title: "Desktop app",
+    items: [
+      "Double-clickable Mac app — no terminal, no Node, no install steps",
+      "Menu-bar icon with fleet status and the kill switch always reachable",
+      "Desktop notifications the moment an agent stops at the approval gate",
+      "Closing the window keeps the fleet running; quitting stops every agent",
+      "Refuses to run twice against the same database",
+      "Builds to .dmg and .zip for Apple Silicon and Intel"
     ]
   },
   {
@@ -1451,6 +1534,7 @@ function render() {
 
   const total = SECTIONS.reduce((n, s) => n + s.tests.length, 0);
   document.getElementById("pill-count").textContent = total + " checks";
+  document.getElementById("pill-sections").textContent = SECTIONS.length + " sections";
   refresh();
 }
 
