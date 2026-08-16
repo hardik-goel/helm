@@ -1,7 +1,15 @@
 import type { NextConfig } from 'next';
 
+/**
+ * The desktop build exports the console to plain files that Electron loads off
+ * disk — no Next server in the packaged app. Every route is already static, so
+ * this costs nothing; it is opt-in only so `pnpm helm` keeps its dev server.
+ */
+const isDesktop = process.env.HELM_TARGET === 'desktop';
+
 const config: NextConfig = {
   reactStrictMode: true,
+  ...(isDesktop ? { output: 'export' as const, distDir: '.next-desktop' } : {}),
   // @helm/core ships TypeScript source; Next compiles it with the app.
   transpilePackages: ['@helm/core'],
   eslint: { ignoreDuringBuilds: true },

@@ -16,7 +16,9 @@
     "test:watch": "vitest",
     "typecheck": "tsc -b --pretty",
     "lint": "eslint .",
-    "db:generate": "pnpm --filter @helm/bridge db:generate"
+    "db:generate": "pnpm --filter @helm/bridge db:generate",
+    "desktop": "pnpm --filter @helm/desktop dev",
+    "desktop:dist": "pnpm --filter @helm/desktop dist"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

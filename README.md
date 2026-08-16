@@ -42,11 +42,33 @@ one-shot builder — then streams the five onboarding steps as they really happe
 
 ---
 
+## The desktop app
+
+If you would rather not keep a terminal open, Helm packages as a Mac app:
+
+```bash
+pnpm desktop        # run it from source
+pnpm desktop:dist   # build Helm.app, a .dmg and a .zip into apps/desktop/dist
+```
+
+It is the same daemon and the same cockpit — the app starts the bridge as a
+child process, serves the console on the usual port, and adds the things a
+window gives you that a terminal does not:
+
+- a **menu-bar icon** with the kill switch, so Law 3 works with the window closed
+- **desktop notifications** the moment an agent stops at the gate
+- closing the window leaves the fleet running; quitting stops every agent first
+
+The app is unsigned unless you configure a certificate, so the first launch
+needs right-click → Open. Signing and notarisation need an Apple Developer
+account; without one macOS will warn about an unidentified developer.
+
 ## What is where
 
 ```
 apps/bridge      the daemon: child processes, scheduler, gate, loops, WS server
 apps/console     Next.js cockpit at :3777 — not deployed anywhere, it is local
+apps/desktop     Electron shell: menu bar, notifications, packaging
 packages/core    shared types, zod schemas for every message on the wire
 ~/.helm/         helm.db, config.json, loops/*.yaml, transcripts/*.jsonl
 ```
@@ -55,9 +77,18 @@ packages/core    shared types, zod schemas for every message on the wire
 | --- | --- |
 | `pnpm helm` | bridge + console together |
 | `pnpm bridge` / `pnpm console` | one at a time |
+| `pnpm desktop` | the desktop app, from source |
+| `pnpm desktop:dist` | build the installable app |
 | `pnpm test` | the whole suite |
 | `pnpm typecheck` | strict TypeScript across the workspace |
 | `pnpm db:generate` | regenerate the Drizzle migration after a schema change |
+
+**Why there is no hosted version.** The daemon spawns processes on your
+machine, reads projects from your disk, and runs on your own `claude login`.
+None of that exists on a serverless host, and a browser will not let an `https`
+page talk to `http://127.0.0.1` anyway. Helm ships as a repo or an app, not a
+URL. A build served from anywhere other than localhost says so instead of
+pretending to work.
 
 `HELM_RUNNER=cli pnpm bridge` swaps the Agent SDK for the CLI fallback.
 `HELM_HOME=/tmp/whatever` points Helm at a throwaway home.

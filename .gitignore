@@ -15,3 +15,9 @@ apps/bridge/drizzle.config.js.map
 
 # Vercel CLI link metadata
 .vercel
+
+# desktop build artifacts
+apps/desktop/build/
+apps/desktop/dist/
+apps/desktop/assets/*.png
+apps/console/.next-desktop/
