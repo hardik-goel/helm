@@ -1,0 +1,51 @@
+appId: com.helm.cockpit
+productName: Helm
+copyright: Helm
+
+directories:
+  output: dist
+  buildResources: assets
+
+# No asar. The daemon runs as its own process outside Electron's module loader,
+# so it needs to resolve better-sqlite3 and the Agent SDK the ordinary way —
+# by walking up to node_modules on a real filesystem. An archive makes that a
+# guessing game about which paths Electron patches; a plain folder does not.
+asar: false
+
+files:
+  - build/**/*
+  - package.json
+  - "!**/*.map"
+
+# Rebuilds better-sqlite3 against Electron's ABI, since the daemon runs on
+# Electron's Node inside the packaged app.
+npmRebuild: true
+
+mac:
+  category: public.app-category.developer-tools
+  icon: assets/icon.png
+  target:
+    - target: dmg
+      arch: [arm64, x64]
+    - target: zip
+      arch: [arm64, x64]
+  darkModeSupport: true
+  # Helm supervises local processes and reads your projects. It is not
+  # sandboxed, and it is signed only when a certificate is configured.
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: assets/entitlements.mac.plist
+  entitlementsInherit: assets/entitlements.mac.plist
+
+dmg:
+  title: Helm
+  backgroundColor: "#0b0d12"
+
+linux:
+  category: Development
+  icon: assets/icon.png
+  target: [AppImage]
+
+win:
+  icon: assets/icon.png
+  target: [nsis]

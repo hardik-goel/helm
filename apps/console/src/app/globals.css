@@ -1,0 +1,558 @@
+/* Helm cockpit tokens. Amber is the only loud color; red is reserved for
+   the kill switch and P0. Everything else is charcoal, ink, and restraint. */
+:root {
+  --bg: #0b0d12;
+  --panel: #12151d;
+  --panel-2: #171b25;
+  --line: #232838;
+  --line-soft: #1b2030;
+  --ink: #d8dbe4;
+  --ink-dim: #8a90a3;
+  --ink-faint: #5b6176;
+  --amber: #e8a33d;
+  --amber-dim: #8a642a;
+  --mint: #5bc99a;
+  --mint-dim: #2f6b53;
+  --red: #e0554a;
+  --red-dim: #7a2f28;
+  --violet: #8b7cd8;
+
+  --r: 9px;
+  --mono:
+    'JetBrains Mono', 'SF Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --t-fast: 120ms;
+  --t-slide: 300ms;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  font-variant-ligatures: none;
+}
+
+#__next,
+body > div {
+  height: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  accent-color: var(--amber);
+}
+
+input[type='range'] {
+  appearance: none;
+  height: 3px;
+  background: var(--line);
+  border-radius: 2px;
+  cursor: pointer;
+}
+input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--amber);
+  border: none;
+}
+
+a {
+  color: var(--amber);
+  text-decoration: none;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+:focus-visible {
+  outline: 1px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.micro {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  background: var(--ink-faint);
+}
+.dot.live {
+  background: var(--mint);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+.dot.wait {
+  background: var(--amber);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+.dot.err {
+  background: var(--red);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 currentColor;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.slide-up {
+  animation: slideUp var(--t-slide) cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- shell ---------- */
+
+.shell {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: 38px 1fr;
+  overflow: hidden;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.brand {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--amber);
+  font-weight: 500;
+}
+
+.ticker {
+  flex: 1;
+  min-width: 0;
+  color: var(--ink-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.panes {
+  display: grid;
+  grid-template-columns: 258px minmax(0, 1fr) 330px;
+  min-height: 0;
+}
+
+.pane {
+  min-height: 0;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-right: 1px solid var(--line);
+}
+.pane:last-child {
+  border-right: none;
+  border-left: 1px solid var(--line);
+}
+
+.pane-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--bg);
+  padding: 10px 12px 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+/* ---------- controls ---------- */
+
+.btn {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 9px;
+  cursor: pointer;
+  color: var(--ink);
+  transition: border-color var(--t-fast), background var(--t-fast);
+}
+.btn:hover:not(:disabled) {
+  border-color: var(--ink-faint);
+}
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.btn.amber {
+  border-color: var(--amber-dim);
+  color: var(--amber);
+}
+.btn.amber:hover:not(:disabled) {
+  border-color: var(--amber);
+}
+.btn.mint {
+  border-color: var(--mint-dim);
+  color: var(--mint);
+}
+.btn.danger {
+  border-color: var(--red-dim);
+  color: var(--red);
+}
+.btn.danger:hover:not(:disabled) {
+  border-color: var(--red);
+  background: rgba(224, 85, 74, 0.08);
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 8px;
+  color: var(--ink);
+}
+.textarea {
+  resize: vertical;
+  min-height: 84px;
+  line-height: 1.55;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.chip.amber {
+  border-color: var(--amber-dim);
+  color: var(--amber);
+}
+.chip.mint {
+  border-color: var(--mint-dim);
+  color: var(--mint);
+}
+.chip.red {
+  border-color: var(--red-dim);
+  color: var(--red);
+}
+
+/* ---------- tabs ---------- */
+
+.tabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--line);
+  padding: 0 8px;
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 2;
+}
+.tab {
+  background: none;
+  border: none;
+  border-bottom: 1px solid transparent;
+  padding: 10px 10px 8px;
+  color: var(--ink-faint);
+  cursor: pointer;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.tab[aria-selected='true'] {
+  color: var(--amber);
+  border-bottom-color: var(--amber);
+}
+.tab:hover {
+  color: var(--ink);
+}
+
+/* ---------- tree ---------- */
+
+.tree-project {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  cursor: grab;
+  border-left: 2px solid transparent;
+}
+.tree-project.drag-over {
+  border-top: 1px solid var(--amber);
+}
+.tree-agent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 4px 26px;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  color: var(--ink-dim);
+}
+.tree-agent:hover {
+  background: var(--panel);
+  color: var(--ink);
+}
+.tree-agent.selected {
+  background: var(--panel-2);
+  border-left-color: var(--amber);
+  color: var(--ink);
+}
+
+/* ---------- feed ---------- */
+
+.feed-line {
+  display: flex;
+  gap: 8px;
+  padding: 3px 12px;
+  border-left: 2px solid transparent;
+  color: var(--ink-dim);
+}
+.feed-line.warn {
+  border-left-color: var(--amber);
+}
+.feed-line.error,
+.feed-line.critical {
+  border-left-color: var(--red);
+  color: var(--ink);
+}
+.feed-time {
+  color: var(--ink-faint);
+  flex: none;
+}
+/* Agent output contains long unbroken shell commands; they must wrap, not
+   push the whole cockpit sideways. */
+.feed-line > span:last-child,
+.chip,
+.card {
+  overflow-wrap: anywhere;
+}
+
+/* ---------- modal / palette ---------- */
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 5, 8, 0.72);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12vh;
+  z-index: 50;
+}
+.modal {
+  width: min(560px, 92vw);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+.modal-head {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.modal-body {
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
+.modal-foot {
+  padding: 10px 14px;
+  border-top: 1px solid var(--line-soft);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.palette-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px;
+  cursor: pointer;
+  color: var(--ink-dim);
+}
+.palette-item.active {
+  background: var(--panel-2);
+  color: var(--ink);
+  border-left: 2px solid var(--amber);
+}
+
+/* ---------- banners ---------- */
+
+.banner {
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.banner.red {
+  background: rgba(224, 85, 74, 0.1);
+  color: var(--red);
+  border-bottom-color: var(--red-dim);
+}
+.banner.amber {
+  background: rgba(232, 163, 61, 0.08);
+  color: var(--amber);
+  border-bottom-color: var(--amber-dim);
+}
+
+/* ---------- misc ---------- */
+
+.stack {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.spread {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.empty {
+  padding: 24px 14px;
+  color: var(--ink-faint);
+  text-align: center;
+  line-height: 1.8;
+}
+.bar {
+  height: 3px;
+  background: var(--line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.bar > span {
+  display: block;
+  height: 100%;
+  background: var(--amber);
+  transition: width var(--t-slide) ease;
+}
+.mono-pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--ink-dim);
+  background: var(--bg);
+  border: 1px solid var(--line-soft);
+  border-radius: 6px;
+  padding: 8px;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.stream-line {
+  display: flex;
+  gap: 8px;
+  padding: 2px 0;
+}
+.stream-role {
+  flex: none;
+  width: 62px;
+  text-align: right;
+  color: var(--ink-faint);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.stream-text {
+  min-width: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.role-assistant .stream-text {
+  color: var(--ink);
+}
+.role-tool .stream-text {
+  color: var(--ink-dim);
+}
+.role-thinking .stream-text {
+  color: var(--violet);
+  font-style: italic;
+}
+.role-gate .stream-text {
+  color: var(--amber);
+}
+.role-error .stream-text {
+  color: var(--red);
+}
+.role-result .stream-text {
+  color: var(--mint);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
